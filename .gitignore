@@ -1,0 +1,5 @@
+.ipynb_checkpoints
+*.swp
+web-ace
+__pycache__
+.vscode
