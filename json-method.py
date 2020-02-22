@@ -10,8 +10,8 @@ import requests
 from bs4 import BeautifulSoup
 
 # local modules
-from config import dl_root, possible_manga_title_classes
-from utils import dl_image, timestamp
+from config import dl_root
+from utils import dl_image, timestamp, get_episode_url
 
 
 def parse_manga_page(source: str, page_url: str):
@@ -19,11 +19,11 @@ def parse_manga_page(source: str, page_url: str):
 
     # get the manga title
     title = None
-    for class_name in possible_manga_title_classes:
-        title_div = soup.find('h2', attrs={'class': class_name})
-        if title_div is not None:
-            title = title_div.text
-            break
+    title_divs = soup.select('#breadcrumb li')
+
+    if len(title_divs) >= 3:
+        title_div = title_divs[2]
+        title = title_div.text
 
     if title is None:
         # fallback to timestamp
@@ -63,12 +63,20 @@ def dl_manga(url):
     """
     Sample url: https://web-ace.jp/youngaceup/contents/1000117/episode/
     """
-    res = requests.get(url)
+    episode_url = get_episode_url(url)
+
+    if episode_url is None:
+        return
+
+    res = requests.get(episode_url)
     if not res.ok:
         print(res)
         return
 
     # sometimes we put old URL, it will be redirected to the main manga page
+    if res.is_redirect:
+        return dl_manga(res.url)
+
     manga = parse_manga_page(res.text, res.url)
     chapters = manga['chapters']
 
@@ -104,16 +112,22 @@ def create_download_jobs(manga):
 
 if __name__ == '__main__':
     manga_urls = [
-        # 'https://web-ace.jp/youngaceup/contents/1000117/episode/',  # 世界最高の暗殺者、異世界貴族に転生するを読む
-        # 'https://web-ace.jp/youngaceup/contents/1000091/episode/',  # 勇者、辞めます
-        # 'https://web-ace.jp/tmca/contents/2000015/episode/',  # Fate/Grand Order -Epic of Remnant- 亜種特異点EX 深海電脳楽土 SE.RA.PHを読む
-        # 'https://web-ace.jp/youngaceup/contents/1000064/episode/',  # パシリな僕と恋する番長さんを読む
-        'https://web-ace.jp/youngaceup/contents/1000021/episode/', # 奪う者 奪われる者を読む
-        'https://web-ace.jp/youngaceup/contents/1000080/episode/', # 平凡なる皇帝を読む
-        'https://web-ace.jp/youngaceup/contents/1000046/episode/', # 異世界建国記を読む
+        'https://web-ace.jp/tmca/contents/2000015/episode/',  # Fate/Grand Order -Epic of Remnant- 亜種特異点EX 深海電脳楽土 SE.RA.PH
+        'https://web-ace.jp/youngaceup/contents/1000064/episode/',  # パシリな僕と恋する番長さん
+        'https://web-ace.jp/youngaceup/contents/1000117/episode/',  # 世界最高の暗殺者、異世界貴族に転生する
+        'https://web-ace.jp/youngaceup/contents/1000091/episode/',  # 勇者、辞めます
+        'https://web-ace.jp/youngaceup/contents/1000021/episode/',  # 奪う者 奪われる者
+        'https://web-ace.jp/youngaceup/contents/1000080/episode/',  # 平凡なる皇帝
+        'https://web-ace.jp/youngaceup/contents/1000046/episode/',  # 異世界建国記
+        'https://web-ace.jp/youngaceup/contents/1000125/episode/',  # 針子の乙女
+        'https://web-ace.jp/youngaceup/contents/1000049/episode/',  # 回復術士のやり直し
+        'https://web-ace.jp/youngaceup/contents/1000133/',  # マジカル☆エクスプローラー エロゲの友人キャラに転生したけど、ゲーム知識使って自由に生きる
+        'https://web-ace.jp/youngaceup/contents/1000136/',  # 三大陸英雄記
+        'https://web-ace.jp/youngaceup/contents/1000126/',  # ゼロスキルの料理番
     ]
 
     for manga_url in manga_urls:
+        print(f'Retrieving information about {manga_url}')
         manga = dl_manga(manga_url)
 
         if manga is None:

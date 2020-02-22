@@ -1,9 +1,3 @@
-possible_manga_title_classes = [
-    'clr-tmca',
-    'clr-youngaceup',
-    'clr-young-ace-up',
-]
-
 """
 We will store all the download images in the `web-ace` directory.
 

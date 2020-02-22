@@ -1,8 +1,22 @@
+# How to use
+
+Put your manga URLs (and comment out some of my manga URL) in `manga_urls` variables in [`json-method.py`](./json-method.py) (and the very end of the file) and run
+
+```
+python3 -m pip install --user -r requirements.txt
+python3 ./json-method.py
+```
+
+# TODO
+
+- Share manga everytime we visit the manga url (this will help creators).
+- Escape un-friendly path characters (e.g. `/`).
+
 # Scraping `web-ace.jp` website
 
 Everything here is subjected to changes anytime.
 
-## Method 1: Using selenium
+## Method 1: Using selenium (deprecated)
 
 `web-ace` does not store image URLs inside the html source page (`img` tag's `src` attribute) to prevent excessive traffic usage. However, they also do not store them in the alternative `data-src` attribute. The images are loaded dynamically as user scrolling down with some `Javascript`.
 
@@ -50,3 +64,4 @@ The code for using this method in the [`json-method.py`](./json-method.py) scrip
 ## 2020-02-22
 
 - Manga title's class name is not consistent.
+- Auto format manga URL.

@@ -3,3 +3,5 @@
 web-ace
 __pycache__
 .vscode
+*.html
+*.ipynb
