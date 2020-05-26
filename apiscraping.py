@@ -79,9 +79,16 @@ def dl_manga(url):
 
     manga = parse_manga_page(res.text, res.url)
     chapters = manga['chapters']
+    title = manga['title']
 
-    for chapter in chapters:
+    print(f'Detected manga {title}.')
+    print(f'Starting to retrieve information about {len(chapters)} chapter(s).')  # noqa
+
+    pbar = tqdm(chapters)
+    for chapter in pbar:
         _url = chapter['url']
+        pbar.set_description(_url)
+
         images = get_images(_url)
         images = list(map(lambda x: urljoin(_url, x), images))
         chapter['images'] = images
@@ -112,7 +119,7 @@ def create_download_jobs(manga):
 
 if __name__ == '__main__':
     manga_urls = [
-        'https://web-ace.jp/tmca/contents/2000015/episode/',  # Fate/Grand Order -Epic of Remnant- 亜種特異点EX 深海電脳楽土 SE.RA.PH
+        'https://web-ace.jp/tmca/contents/2000015/episode/',  # Fate/Grand Order -Epic of Remnant- 亜種特異点EX 深海電脳楽土 SE.RA.PH # noqa
         'https://web-ace.jp/youngaceup/contents/1000064/episode/',  # パシリな僕と恋する番長さん
         'https://web-ace.jp/youngaceup/contents/1000117/episode/',  # 世界最高の暗殺者、異世界貴族に転生する
         'https://web-ace.jp/youngaceup/contents/1000091/episode/',  # 勇者、辞めます
@@ -121,9 +128,15 @@ if __name__ == '__main__':
         'https://web-ace.jp/youngaceup/contents/1000046/episode/',  # 異世界建国記
         'https://web-ace.jp/youngaceup/contents/1000125/episode/',  # 針子の乙女
         'https://web-ace.jp/youngaceup/contents/1000049/episode/',  # 回復術士のやり直し
-        'https://web-ace.jp/youngaceup/contents/1000133/',  # マジカル☆エクスプローラー エロゲの友人キャラに転生したけど、ゲーム知識使って自由に生きる
+        'https://web-ace.jp/youngaceup/contents/1000133/',  # マジカル☆エクスプローラー エロゲの友人キャラに転生したけど、ゲーム知識使って自由に生きる # noqa
         'https://web-ace.jp/youngaceup/contents/1000136/',  # 三大陸英雄記
         'https://web-ace.jp/youngaceup/contents/1000126/',  # ゼロスキルの料理番
+        'https://web-ace.jp/youngaceup/contents/1000015/episode/',  # 賢者の孫
+        'https://web-ace.jp/youngaceup/contents/1000124/episode/',  # 帰ってください！ 阿久津さん
+        'https://web-ace.jp/youngaceup/contents/1000129/',  # 賢者の孫SS
+        'https://web-ace.jp/youngaceup/contents/1000122/',  # 賢者の孫SP
+        'https://web-ace.jp/youngaceup/contents/1000105/',  # 賢者の孫 Extra Story
+        'https://web-ace.jp/youngaceup/contents/1000136/',  # 三大陸英雄記
     ]
 
     for manga_url in manga_urls:
